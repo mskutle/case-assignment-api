@@ -9,6 +9,7 @@ public class AddMeasurementRequestValidator : AbstractValidator<AddMeasurementRe
 		RuleFor(x => x).NotNull();
 		RuleFor(x => x.Measurements)
 			.NotEmpty()
+			.Must(x => x.Count() == 3).WithMessage($"You must provide 3 measurements")
 			.Must(x => x.Any(m => m.Type == MeasurementType.TEMP))
 			.Must(x => x.Any(m => m.Type == MeasurementType.HR))
 			.Must(x => x.Any(m => m.Type == MeasurementType.RR))
@@ -21,21 +22,23 @@ public class MeasurementValidator : AbstractValidator<Measurement>
 {
 	public MeasurementValidator()
 	{
-		RuleFor(x => x.Value).NotEmpty();
 		RuleFor(x => x.Type).NotNull().IsInEnum().WithMessage("You supplied an invalid measurement type.");
 		RuleFor(x => x.Value)
+			.NotEmpty()
 			.GreaterThan(NewsScoreCalculator.TemperatureMinValue)
 			.LessThanOrEqualTo(NewsScoreCalculator.TemperatureMaxValue)
 			.When(m => m.Type == MeasurementType.TEMP)
 			.WithName("Temperature");
 
 		RuleFor(x => x.Value)
+			.NotEmpty()
 			.GreaterThan(NewsScoreCalculator.HeartRateMinValue)
 			.LessThanOrEqualTo(NewsScoreCalculator.HeartRateMaxValue)
 			.When(m => m.Type == MeasurementType.HR)
 			.WithName("Heart rate");
-		
+
 		RuleFor(x => x.Value)
+			.NotEmpty()
 			.GreaterThan(NewsScoreCalculator.RespiratoryRateMinValue)
 			.LessThanOrEqualTo(NewsScoreCalculator.RespiratoryRateMaxValue)
 			.When(m => m.Type == MeasurementType.RR)

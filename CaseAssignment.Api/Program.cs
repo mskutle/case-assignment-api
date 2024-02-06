@@ -17,11 +17,9 @@ app.MapPost("/measurements", (AddMeasurementRequest request, IValidator<AddMeasu
 	var validationResult = validator.Validate(request);
 	if (!validationResult.IsValid)
 	{
-		var validationErrors = validationResult.Errors
-			.Select(e => new {Error = e.ErrorMessage, e.PropertyName})
-			.ToList();
-		
-		return Results.ValidationProblem(errors: validationErrors.ToDictionary(x => x.PropertyName, y => new[] {y.Error}));
+		return Results.ValidationProblem(validationResult.Errors.ToDictionary(
+			x => x.PropertyName,
+			x => new[] { x.ErrorMessage }));
 	}
 
 	var score = calculator.CalculateScore(request.Measurements);
